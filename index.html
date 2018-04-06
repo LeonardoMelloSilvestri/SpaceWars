@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Space Wars</title>
+	<link rel="stylesheet" href="css/style.css">
+	<meta charset="utf-8">
+</head>
+<body>
+	<img id="imgPlayer" src="img/player.png" style="display: none">
+	<img id="imgClassicEnemy" src="img/classicEnemy.png" style="display: none">
+	<img id="imgFastEnemy" src="img/fastEnemy.png" style="display: none">
+	<img id="imgTankEnemy" src="img/tankEnemy.png" style="display: none">
+	<img id="imgBossEnemy" src="img/bossEnemy.gif" style="display: none">
+	<img id="imgClassicBullet" src="img/classicBullet.png" style="display: none">
+	<img id="imgSharpBullet" src="img/sharpBullet.png" style="display: none">
+	<img id="imgUltimateBullet" src="img/ultimateBullet.png" style="display:none">
+	<img id="imgSharpItem" src="img/sharpItem.png" style="display: none">
+	<img id="imgUltimateItem" src="img/ultimateItem.png" style="display: none">
+	<img id="imgHealingItem" src="img/healingItem.png" style="display: none">
+
+	<canvas id="canvas" height="650" width="1200">
+		<script src="js/player.js"></script>
+		<script src="js/enemy.js"></script>
+		<script src="js/item.js"></script>
+		<script src="js/bullet.js"></script>
+		<script src="js/script.js"></script>
+	</canvas>
+	<div>
+		<input id="Play" style="z-index: 2;" type="button" value="Clique aqui para jogar!" onclick="init(), enemy.spawnEnemies()">
+	</div>
+</body>
+</html>
