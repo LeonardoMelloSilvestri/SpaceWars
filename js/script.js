@@ -4,6 +4,7 @@ var ctx = canvas.getContext('2d');
 player = new Player();
 bullet = new GlobalBullets();
 sharpBullet = new SharpBullet();
+cometBullet = new CometBullet();
 ultimateBullet = new UltimateBullet();
 enemy = new GlobalEnemies();
 item = new GlobalItens();
@@ -48,6 +49,7 @@ function update(){
 
 function newGame(){
 	if (player.hp <= 0) {
+		alert("Você perdeu! Pontuação final: " + player.score);
 		player = new Player();
 		ammoItens = [];
 		enemies = [];
@@ -66,9 +68,11 @@ function draw(){
 	ctx.fillText('Score: ' + player.score, 130, 620);
 	ctx.fillText('Enemies: ' + enemyCount, 400, 620);
 	if (sharpBullet.ammo > 0 && player.bulletType == "Sharp") {
-		ctx.fillText('Sharp ammo: ' + sharpBullet.ammo, 500, 40);	
+		ctx.fillText('Sharp ammo: ' + sharpBullet.ammo, 500, 30);	
+	} else if (cometBullet.ammo > 0 && player.bulletType == "Comet") {
+		ctx.fillText('Comet ammo: ' + cometBullet.ammo, 500, 30);	
 	} else if (ultimateBullet.ammo > 0 && player.bulletType == "Ultimate") {
-		ctx.fillText('Ultimate ammo: ' + ultimateBullet.ammo, 550, 40);	
+		ctx.fillText('Ultimate ammo: ' + ultimateBullet.ammo, 500, 30);	
 	}
 	player.draw();
 	bullet.drawBullets();
