@@ -1,7 +1,7 @@
 var imgClassicEnemy = document.getElementById('imgClassicEnemy');
 var imgFastEnemy = document.getElementById('imgFastEnemy');
+var imgDiagEnemy = document.getElementById('imgDiagEnemy');
 var imgTankEnemy = document.getElementById('imgTankEnemy');
-var imgClassicBullet = document.getElementById('imgClassicBullet');
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
@@ -11,6 +11,7 @@ var enemyCount = 0;
 var speedMod = 0;
 
 function ClassicEnemy() {
+	this.name = "Classic";
 	this.height = 100;
 	this.width = 100;
 	this.x = canvas.width;
@@ -27,6 +28,7 @@ function ClassicEnemy() {
 }
 
 function FastEnemy() {
+	this.name = "Fast";
 	this.height = 80;
 	this.width = 80;
 	this.x = canvas.width;
@@ -42,7 +44,31 @@ function FastEnemy() {
 	}
 }
 
+function DiagEnemy() {
+	this.name = "Diag";
+	this.height = 150;
+	this.width = 120;
+	this.x = canvas.width;
+	this.y = Math.floor((Math.random() * 540) + 10);
+	this.speed = 3 + speedMod;
+	this.posY = Math.floor(Math.random() * 2);
+	this.hp = 3;
+	this.damage = 15;
+	this.score = 30;
+
+	this.draw = function(){
+		this.x -= this.speed;
+		if (this.posY == 0) {
+			this.y -= this.speed;
+		} else {
+			this.y += this.speed;
+		}
+		ctx.drawImage(imgDiagEnemy, this.x, this.y, this.width, this.height);
+	}
+}
+
 function TankEnemy() {
+	this.name = "Tank";
 	this.height = 150;
 	this.width = 150;
 	this.x = canvas.width;
@@ -68,25 +94,34 @@ function GlobalEnemies(){
 
 	this.spawnEnemies = function(){
 		setInterval(function(){
-			var random = Math.floor((Math.random() * 10) + 1);
+			var random = Math.floor((Math.random() * 12) + 1);
 			if (random >= 1 && random <= 5) {
 				enemies.push(new ClassicEnemy());
-			} else if (random >= 6 && random <= 9) {
+			} else if (random >= 6 && random <= 8) {
 				enemies.push(new FastEnemy());
-			} else if (random == 10) {
+			} else if (random >= 9 && random <= 11) {
+				enemies.push(new DiagEnemy());
+			} else if (random == 12) {
 				enemies.push(new TankEnemy());
 			}
 			enemyCount++;
 			if (enemyCount % 10 == 0) {
-				speedMod++;
+				speedMod += 0.5;
 			}
-		}, 400);
+		}, 500);
 	}
 
 	this.colideMargin = function(){
 		for (var i = 0; i < enemies.length; i++) {
 			var currentEnemy = enemies[i];
 
+			if (currentEnemy.name == "Diag") {
+				if (currentEnemy.y + 35 <= 0) {
+					currentEnemy.posY = 1;
+				} else if (currentEnemy.y + currentEnemy.height - 35 >= canvas.height) {
+					currentEnemy.posY = 0;
+				}
+			}
 			if (currentEnemy.x + currentEnemy.width <= 0) {
 				player.hp -= currentEnemy.damage;
 				enemies.splice(enemies.indexOf(currentEnemy), 1);
