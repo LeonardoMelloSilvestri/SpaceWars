@@ -1,4 +1,5 @@
 var imgSharpItem = document.getElementById('imgSharpItem');
+var imgCometItem = document.getElementById('imgCometItem');
 var imgUltimateItem = document.getElementById('imgUltimateItem');
 var imgHealingItem = document.getElementById('imgHealingItem');
 var canvas = document.getElementById('canvas');
@@ -20,10 +21,23 @@ function SharpItem() {
 	}
 }
 
+function CometItem() {
+	this.name = "Comet";
+	this.height = 80;
+	this.width = 120;
+	this.x = Math.floor((Math.random() * 600) + 500);
+	this.y = Math.floor((Math.random() * 550) + 10);
+	this.hp = 2;
+
+	this.draw = function(){
+		ctx.drawImage(imgCometItem, this.x, this.y, this.width, this.height);
+	}
+}
+
 function UltimateItem() {
 	this.name = "Ultimate";
-	this.height = 80;
-	this.width = 80;
+	this.height = 100;
+	this.width = 100;
 	this.x = Math.floor((Math.random() * 600) + 500);
 	this.y = Math.floor((Math.random() * 550) + 10);
 	this.hp = 2;
@@ -64,10 +78,12 @@ function GlobalItens(){
 			var currentEnemy = enemies[i];
 			if (currentEnemy.hp <= 0) {
 				var random = Math.floor((Math.random() * 20) + 1);
-				if (random == 1 && player.bulletType == "Classic") {
-					ammoItens.push(new UltimateItem());
-				} else if (random >= 2 && random <= 3 && player.bulletType == "Classic") {
+				if (random >= 0 && random <= 3 && player.bulletType == "Classic") {
 					ammoItens.push(new SharpItem());
+				} else if (random >= 4 && random <= 5 && player.bulletType == "Classic") {
+					ammoItens.push(new CometItem());
+				} else if (random == 6 && player.bulletType == "Classic") {
+					ammoItens.push(new UltimateItem());
 				} else if (random >= 4 && random <= 5) {
 					healingItens.push(new HealingItem());
 				}
