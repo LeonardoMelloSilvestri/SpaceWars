@@ -1,5 +1,6 @@
 var imgClassicBullet = document.getElementById('imgClassicBullet');
 var imgSharpBullet = document.getElementById('imgSharpBullet');
+var imgCometBullet = document.getElementById('imgCometBullet');
 var imgUltimateBullet = document.getElementById('imgUltimateBullet');
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
@@ -7,6 +8,7 @@ var ctx = canvas.getContext('2d');
 player = new Player();
 bullet = new GlobalBullets();
 sharpBullet = new SharpBullet();
+cometBullet = new CometBullet();
 ultimateBullet = new UltimateBullet();
 enemy = new GlobalEnemies();
 item = new GlobalItens();
@@ -40,6 +42,7 @@ function ClassicBullet(){
 	this.y = player.y + 50;
 	this.speed = 40;
 	this.damage = 1;
+	this.pass = false;
 
 	this.draw = function(){
 		this.x += this.speed;
@@ -48,6 +51,7 @@ function ClassicBullet(){
 }
 
 function SharpBullet(){
+	this.name = "Comet";
 	this.height = 200;
 	this.width = 150;
 	this.x = player.x + 20;
@@ -57,6 +61,7 @@ function SharpBullet(){
 	this.shoot = false;
 	this.damage = 5;
 	this.ammo = 0;
+	this.pass = false;
 
 	this.draw = function(){
 		this.x += this.speed;
@@ -64,19 +69,40 @@ function SharpBullet(){
 	}
 }
 
-function UltimateBullet(){
-	this.height = 800;
-	this.width = 500;
-	this.x = player.x + 50;
-	this.y = player.y - 320;
-	this.speed = 50;
+function CometBullet(){
+	this.name = "Comet";
+	this.height = 250;
+	this.width = 300;
+	this.x = player.x + 20;
+	this.y = player.y - 50;
+	this.speed = 20;
 	this.zIsDown = false;
 	this.shoot = false;
 	this.damage = 100;
 	this.ammo = 0;
+	this.pass = true;
 
 	this.draw = function(){
-		this.width += this.speed;
+		this.x += this.speed;
+		ctx.drawImage(imgCometBullet, this.x, this.y, this.width, this.height);
+	}
+}
+
+function UltimateBullet(){
+	this.name = "Ultimate";
+	this.height = 500;
+	this.width = 600;
+	this.x = player.x;
+	this.y = player.y - 140;
+	this.speed = 15;
+	this.zIsDown = false;
+	this.shoot = false;
+	this.damage = 100;
+	this.ammo = 0;
+	this.pass = true;
+
+	this.draw = function(){
+		this.x += this.speed;
 		ctx.drawImage(imgUltimateBullet, this.x, this.y, this.width, this.height);
 	}
 }
@@ -90,35 +116,37 @@ function GlobalBullets(){
 	}
 
 	this.shootBullet = function(){
-		if (this.shoot == true) {
-			if (player.bulletType == "Classic") {
-				bullets.push(new ClassicBullet());
-			} else if (player.bulletType == "Sharp") {
-				bullets.push(new SharpBullet());
-				sharpBullet.ammo--;
-				if (sharpBullet.ammo <= 0) {
-					player.bulletType = "Classic";
-				}
-			} else if (player.bulletType == "Ultimate") {
-				player.score += 1000;
-				enemies = [];
-				bullets.push(new UltimateBullet());
-				ultimateBullet.ammo--;
-				if (ultimateBullet.ammo <= 0) {
-					player.bulletType = "Classic";
+			if (this.shoot == true) {
+				if (player.bulletType == "Classic") {
+					bullets.push(new ClassicBullet());
+				} else if (player.bulletType == "Sharp") {
+					bullets.push(new SharpBullet());
+					sharpBullet.ammo--;
+					if (sharpBullet.ammo <= 0) {
+						player.bulletType = "Classic";
+					}
+				} else if (player.bulletType == "Comet") {
+					bullets.push(new CometBullet()); 
+					cometBullet.ammo--;
+					if (cometBullet.ammo <= 0) {						
+						player.bulletType = "Classic";						
+					}
+				} else if (player.bulletType == "Ultimate") {
+					bullets.push(new UltimateBullet()); 
+					player.score += 1000;
+					ultimateBullet.ammo--;
+					if (ultimateBullet.ammo <= 0) {						
+						player.bulletType = "Classic";						
+					}
 				}
 			}
-		}
-		this.shoot = false;
+			this.shoot = false;
 	}
 
 	this.colideMargin = function(){
 		for (var i = 0; i < bullets.length; i++) {
 			var currentBullet = bullets[i];
-
-			if (currentBullet.x >= canvas.width && player.bulletType != "Ultimate") {
-				bullets.splice(bullets.indexOf(currentBullet), 1);
-			} else if (currentBullet.x + currentBullet.width >= canvas.width) {
+			if (currentBullet.x >= canvas.width) {
 				bullets.splice(bullets.indexOf(currentBullet), 1);
 			}
 		}
@@ -136,13 +164,13 @@ function GlobalBullets(){
 					currentBullet.y + currentBullet.height >= currentEnemy.y &&
 					currentBullet.y <= currentEnemy.y + currentEnemy.height) {
 					currentEnemy.hp -= currentBullet.damage;
+						if (currentBullet.pass == false) {
+							bullets.splice(bullets.indexOf(currentBullet), 1);
+						}
 						if (currentEnemy.hp <= 0) {
 							item.spawnItens();
 							player.score += currentEnemy.score;
 							enemies.splice(enemies.indexOf(currentEnemy), 1);
-						}
-						if (player.bulletType != "Ultimate") {
-							bullets.splice(bullets.indexOf(currentBullet), 1);
 						}
 				}
 			}
@@ -161,15 +189,19 @@ function GlobalBullets(){
 					currentBullet.y + currentBullet.height >= currentAmmoItem.y &&
 					currentBullet.y <= currentAmmoItem.y + currentAmmoItem.height) {
 					currentAmmoItem.hp -= currentBullet.damage;
-					bullets.splice(bullets.indexOf(currentBullet), 1);
-					if (currentAmmoItem.hp <= 0) {
+					if (currentBullet.pass == false) {
+						bullets.splice(bullets.indexOf(currentBullet), 1);
+					}
+					if (currentAmmoItem.hp <= 0 && player.bulletType != "Ultimate") {
 						player.bulletType = currentAmmoItem.name;
+						ammoItens = [];
 						if (currentAmmoItem.name == "Sharp") {
 							sharpBullet.ammo = 20;
+						} else if (currentAmmoItem.name == "Comet") {
+							cometBullet.ammo = 10; 
 						} else if (currentAmmoItem.name == "Ultimate") {
-							ultimateBullet.ammo = 1; 
+							ultimateBullet.ammo = 3;
 						}
-						ammoItens = [];
 					}
 				}
 			}
@@ -188,7 +220,9 @@ function GlobalBullets(){
 					currentBullet.y + currentBullet.height >= currentHealingItem.y &&
 					currentBullet.y <= currentHealingItem.y + currentHealingItem.height) {
 					currentHealingItem.hp -= currentBullet.damage;
-					bullets.splice(bullets.indexOf(currentBullet), 1);
+					if (currentBullet.pass == false) {
+						bullets.splice(bullets.indexOf(currentBullet), 1);
+					}
 					if (currentHealingItem.hp <= 0) {
 						if (currentHealingItem.name == "Heal") {
 							player.hp += 30;
