@@ -76,6 +76,7 @@ function GlobalItens(){
 	this.spawnItens = function(){
 		for (var i = 0; i < enemies.length; i++) {
 			var currentEnemy = enemies[i];
+			
 			if (currentEnemy.hp <= 0) {
 				var random = Math.floor((Math.random() * 20) + 1);
 				if (random >= 0 && random <= 3 && player.bulletType == "Classic") {

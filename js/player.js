@@ -35,7 +35,7 @@ function Player() {
 	this.y = canvas.height / 2 - 75;
 	this.moveUp = false;
 	this.moveDown = false;
-	this.speed = 10;
+	this.speed = 13;
 	this.bulletType = "Classic";
 	this.hp = 100;
 	this.score = 0;
